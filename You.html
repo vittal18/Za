@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Canvas Animation</title>
+  <style>
+    body, html {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: sans-serif;
+      color: white;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+    }
+    .overlay-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      color: white;
+      text-align: center;
+      text-shadow: 0 0 5px #ff00ff, 0 0 10px #00ffff;
+      z-index: 1;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay-text" id="animatedText"></div>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const numDots = 1000;
+    const perspective = 500;
+    let dots = [];
+
+    for (let i = 0; i < numDots; i++) {
+      dots.push({
+        x: (Math.random() - 0.5) * canvas.width,
+        y: (Math.random() - 0.5) * canvas.height,
+        z: Math.random() * canvas.width
+      });
+    }
+
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < dots.length; i++) {
+        let dot = dots[i];
+        dot.z -= 2;
+
+        if (dot.z <= 0) {
+          dot.z = canvas.width;
+        }
+
+        let scale = perspective / dot.z;
+        let x = dot.x * scale + canvas.width / 2;
+        let y = dot.y * scale + canvas.height / 2;
+
+        ctx.beginPath();
+        ctx.arc(x, y, scale, 0, Math.PI * 2);
+        ctx.fillStyle = 'white';
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // Animated text reveal
+    const text = "I wanna smoke zaza and umpocoloco later, bu but for now titties would do me good.";
+    const textElement = document.getElementById("animatedText");
+    let index = 0;
+
+    function typeText() {
+      if (index < text.length) {
+        textElement.textContent += text[index++];
+        setTimeout(typeText, 50);
+      }
+    }
+
+    typeText();
+  </script>
+</body>
+</html>
